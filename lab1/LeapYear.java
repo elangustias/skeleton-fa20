@@ -6,10 +6,7 @@ public class LeapYear {
         /** returns t if year is a leap year, false otherwise */
         boolean first_bool = year % 400 == 0;
         boolean sec_bool = year % 4 == 0 && year % 100 != 0;
-        if first_bool || sec_bool {
-            return True;
-        }
-        return False;
+        return first_bool || sec_bool;
     }
     /** Calls isLeapYear to print correct statement.
      *  @param  year to be analyzed
