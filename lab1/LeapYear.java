@@ -4,7 +4,9 @@
 public class LeapYear {
     public static boolean isLeapYear(int year) {
         /** returns t if year is a leap year, false otherwise */
-        if ((year % 400 == 0) or ((year % 4 == 0) and (year % 100 != 0))) {
+        boolean first_bool = year % 400 == 0;
+        boolean sec_bool = year % 4 == 0 && year % 100 != 0;
+        if first_bool || sec_bool {
             return True;
         }
         return False;
