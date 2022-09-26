@@ -34,9 +34,35 @@ public class Body {
 		return g * this.mass * b.mass / (dist * dist);
 	}
 	public double calcForceExertedByX(Body b) {
-		double force = this.calcForceExertedby(b);
+		double force = this.calcForceExertedBy(b);
 		double xxDist = b.xxPos - this.xxPos;
 		double dist = this.calcDistance(b);
 		return force * xxDist / dist;
+	}
+	public double calcForceExertedByY(Body b) {
+		double force = this.calcForceExertedBy(b);
+		double yyDist = b.yyPos - this.yyPos;
+		double dist = this.calcDistance(b);
+		return force * yyDist / dist;
+	}
+	public double calcNetForceExertedByX(Body[] a) {
+		double netForce = 0.0;
+		for (Body x : a) {
+			if (this.equals(x)) {
+				continue;
+			}
+			netForce += this.calcForceExertedByX(x);
+		}
+		return netForce;
+	}
+	public double calcNetForceExertedByY(Body[] a) {
+		double netForce = 0.0;
+		for (Body y : a) {
+			if (this.equals(y)) {
+				continue;
+			}
+			netForce += this.calcForceExertedByY(y);
+		}
+		return netForce;
 	}
 }
