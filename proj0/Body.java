@@ -28,4 +28,9 @@ public class Body {
 		double yyDist = b.yyPos - this.yyPos;
 		return Math.sqrt((xxDist * xxDist) + (yyDist * yyDist));
 	}
+	public double calcForceExertedby(Body b) {
+		double g = 6.67e-11;
+		double dist = this.calcDistance(b);
+		return g * this.mass * b.mass / (dist * dist);
+	}
 }
