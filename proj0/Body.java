@@ -65,4 +65,17 @@ public class Body {
 		}
 		return netForce;
 	}
+	public void update(double dt, double fX, double fY) {
+		/** accelX = Fnetx/mass
+		 * 	accelY = Fnety/mass
+		 * 	example - Saturn's accelX = -2e22 (FnetX) / 6e26 (mass) = 0.3333e-4
+		 */
+		double xxAccel = fX/this.mass;
+		double yyAccel = fY/this.mass;
+		this.xxVel = this.xxVel + dt * xxAccel;
+		this.yyVel = this.yyVel + dt * yyAccel;
+		this.xxPos = this.xxPos + dt * this.xxVel;
+		this.yyPos = this.yyPos + dt * this.yyVel;
+	}
+
 }
