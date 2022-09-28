@@ -16,9 +16,9 @@ public class NBody {
 	}
 	public static Body[] readBodies(String str) {
 		In in = new In(str);
-		int numPlanets = in.readInt(); // I don't need the readNumPlanets method here
-		in.readDouble(); // radius is a throwaway here UNFINISHED
-		Body[] bodies = new Body[numPlanets]; // can this be generalized further??? UNFINISHED
+		int numPlanets = in.readInt(); // I don't need readNumPlanets method here
+		in.readDouble(); // radius is a throwaway here
+		Body[] bodies = new Body[numPlanets];
 		for (int i = 0; i < bodies.length; i += 1) {
 			double xxPos = in.readDouble();
 			double yyPos = in.readDouble();
@@ -36,17 +36,17 @@ public class NBody {
 		String filename = args[2];
 		double radius = readRadius(filename);
 		Body[] bodies = readBodies(filename);
-		int numPlanets = readNumPlanets(filename); // LET'S SEE IF THIS WORKS
+		int numPlanets = readNumPlanets(filename); // IT WORKED!
 		StdDraw.setScale(-radius, radius);
 		StdDraw.picture(0, 0, "images/starfield.jpg");
 		for (Body b : bodies) {
 			b.draw();
 		}
 		double time = 0;
-		StdDraw.enableDoubleBuffering(); // might need to go somewhere else
+		StdDraw.enableDoubleBuffering();
 		while (time <= T) {
-			double[] xForces = new double[numPlanets]; // can this be generalized further???
-			double[] yForces = new double[numPlanets]; // can this be generalized further???
+			double[] xForces = new double[numPlanets];
+			double[] yForces = new double[numPlanets];
 			for (int i = 0; i < bodies.length; i += 1) {
 				xForces[i] = bodies[i].calcNetForceExertedByX(bodies);
 				yForces[i] = bodies[i].calcNetForceExertedByY(bodies);
@@ -59,7 +59,7 @@ public class NBody {
 				b.draw();
 			}
 			StdDraw.show();
-			StdDraw.pause(10); //milliseconds, might bug
+			StdDraw.pause(10); // 10 milliseconds
 			time += dt;
 		}
 	}
