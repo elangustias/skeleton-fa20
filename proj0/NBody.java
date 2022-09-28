@@ -1,17 +1,24 @@
 public class NBody {
+	/** Wasn't part of assignment but trying to make a new method numPlanets bc there are
+	 *  a coule of areas where you need that data if you're going to generalize the program.
+	 *  Hopefully it won't bug out.
+	 */
+	public static int readNumPlanets(String str) {
+		In in = new In(str);
+		int numPlanets = in.readInt();
+		return numPlanets;
+	}
 	public static double readRadius(String str) {
 		In in = new In(str);
-		double radius;
-		radius = in.readDouble();
-		radius = in.readDouble();
+		in.readDouble(); //throws away numPlanets
+		double radius = in.readDouble();
 		return radius;
 	}
 	public static Body[] readBodies(String str) {
 		In in = new In(str);
-		/* Throwaways for first 2 nums */
-		in.readDouble();
-		in.readDouble();
-		Body[] bodies = new Body[5]; // can this be generalized further???
+		int numPlanets = in.readInt(); // I don't need the readNumPlanets method here
+		in.readDouble(); // radius is a throwaway here UNFINISHED
+		Body[] bodies = new Body[numPlanets]; // can this be generalized further??? UNFINISHED
 		for (int i = 0; i < bodies.length; i += 1) {
 			double xxPos = in.readDouble();
 			double yyPos = in.readDouble();
@@ -29,6 +36,7 @@ public class NBody {
 		String filename = args[2];
 		double radius = readRadius(filename);
 		Body[] bodies = readBodies(filename);
+		int numPlanets = readNumPlanets(filename); // LET'S SEE IF THIS WORKS
 		StdDraw.setScale(-radius, radius);
 		StdDraw.picture(0, 0, "images/starfield.jpg");
 		for (Body b : bodies) {
@@ -37,8 +45,8 @@ public class NBody {
 		double time = 0;
 		StdDraw.enableDoubleBuffering(); // might need to go somewhere else
 		while (time <= T) {
-			double[] xForces = new double[5]; // can this be generalized further???
-			double[] yForces = new double[5]; // can this be generalized further???
+			double[] xForces = new double[numPlanets]; // can this be generalized further???
+			double[] yForces = new double[numPlanets]; // can this be generalized further???
 			for (int i = 0; i < bodies.length; i += 1) {
 				xForces[i] = bodies[i].calcNetForceExertedByX(bodies);
 				yForces[i] = bodies[i].calcNetForceExertedByY(bodies);
