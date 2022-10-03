@@ -4,14 +4,15 @@ public class LinkedListDeque<ItemType> {
     private int size;
     private LinkedNode sentinel;
 
-    public class LinkedNode {
-        public ItemType item;
-        public LinkedNode next;
-        public LinkedNode prev;
+    private class LinkedNode {
+        private ItemType item;
+        private LinkedNode next;
+        private LinkedNode prev;
         public LinkedNode(ItemType i, LinkedNode n, LinkedNode p) {
-            ItemType item = i;
-            LinkedNode next = n;
-            LinkedNode prev = p;
+            item = i;
+            next = n;
+            prev = p;
+            // I HAD THESE AT ITEMTYPE ITEM = I, ETC. WHICH WAS CAUSING THE VALUES TO REASSGIN TO NULL
         }
     }
 
@@ -50,8 +51,9 @@ public class LinkedListDeque<ItemType> {
         LinkedNode dequeCopy = sentinel.next; // SHOULD I BE USING LINKEDNODE OR LINKELISTDEQUE HERE???
         while (dequeCopy != sentinel) {
             System.out.print(dequeCopy.item + " ");
+            dequeCopy = dequeCopy.next;
         }
-        System.out.println(""); // Project asks to print out new line after all items have been printed
+        System.out.println(" "); // Project asks to print out new line after all items have been printed
     }
     public ItemType removeFirst() {
         if (size > 0) {
@@ -80,7 +82,7 @@ public class LinkedListDeque<ItemType> {
         // SENTINEL FIRST IS SET AS NULL WHICH HELPS ME HERE, BUT IT MIGHT GIVE ERRORS IN FUTURE
         while (index > 0 && dequeCopy != sentinel) {
             dequeCopy = dequeCopy.next;
-            index += 1;
+            index -= 1;
         }
         return dequeCopy.item;
         // SENTINEL.ITEM IS NULL SO FOR THIS PROBLEM THAT WORKS PERFECTLY
@@ -95,5 +97,20 @@ public class LinkedListDeque<ItemType> {
         } else {
             return getRecursive(index-1, dequeCopy.next);
         }
+    }
+    public static void main(String[] args) {
+        LinkedListDeque a = new LinkedListDeque();
+        a.addFirst(3);
+        a.addLast(4);
+        System.out.println(a.isEmpty());
+        System.out.println(a.size());
+        a.printDeque();
+        a.addFirst(2);
+        System.out.println(a.get(2));
+        System.out.println(a.getRecursive(2));
+        System.out.println(a.removeFirst());
+        a.printDeque();
+        System.out.println(a.removeLast());
+        a.printDeque();
     }
 }
