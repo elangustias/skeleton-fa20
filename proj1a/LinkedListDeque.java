@@ -99,7 +99,7 @@ public class LinkedListDeque<ItemType> {
         }
     }
     public static void main(String[] args) {
-        LinkedListDeque a = new LinkedListDeque();
+        LinkedListDeque<Integer> a = new LinkedListDeque<>();
         a.addFirst(3);
         a.addLast(4);
         System.out.println(a.isEmpty());
