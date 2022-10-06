@@ -23,11 +23,6 @@ public class ArrayDeque<ItemType> {
     public int size() {
         return size - 8;
     }
-    public void resize(int capacity) {
-        ItemType[] a = (ItemType[]) new Object[capacity];
-        System.arraycopy(items, 0, a, 0, size);
-        items = a;
-    }
     public void addFirst(ItemType item) {
         // If size is 8, ie if the list is empty, we will just make sure the next starting index is 0
         if (size == items.length + 8) {
@@ -72,6 +67,38 @@ public class ArrayDeque<ItemType> {
             nl = lastIndex + 1;
         }
         return nl;
+    }
+    private void restart() {
+        firstIndex = 0;
+        lastIndex = 0;
+    }
+    public ItemType removeFirst() {
+        if (size == 8) {return null;}
+        ItemType rf = items[firstIndex];
+        items[firstIndex] = null;
+        size -= 1;
+        // I NEED THIS IF STATEMENT BC OTHERWISE FIRST AND LAST WON'T BE THE SAME EVEN THOUGH SIZE IS 0
+        // EG IF I REMOVELAST AND IT'S THE LAST ITEM IN LIST, IE FIRST AND LAST, LAST WILL BE UPDATED TO THE NEXT
+        // INDEX BUT FIRST WON'T. BETTER TO JUST RESTART THE INDICES WHEN WE'RE BACK TO AN EMPTY LIST
+        if (size == 8) {
+            restart();
+        } else {
+            /** HERE CHECK WITH IF STATEMENT WHETHER ITEMS NEEDS A REORDERING + RESIZING TO MAKE SMALLER.
+             *  WILL NEED A NEW FUNC THAT DOES BOTH, FIRST SETS THE ITEMS TO START AT INDEX 0, ...
+             *  AND THEN CUTS OFF EXCESS BOXES UNTIL DESIRED SIZE.
+             *  IF ITEMS.LENGTH >= 16 && (SIZE - 8) / ITEMS.LENGTH  < 0.25 (IE 25%), THEN TRIM LENGTH DOWN TO 15
+             *  SAME PROCESS FOR  REMOVELAST
+             */
+        }
+        int nf = nextFirst(); // THIS WON'T WORK. NEED A NEXTFIRST THAT MOVES FORWARD RATHER THAN BACK...
+        // RENAME NEXTFIRST, NEXTLAST TO PLUSFIRST, PLUSLAST AND CREATE MINUSFIRST, MINUSLAST AS HELPERS FOR REMOVE
+        firstIndex = nf;
+        return rf;
+    }
+    public void resize(int capacity) {
+        ItemType[] a = (ItemType[]) new Object[capacity];
+        System.arraycopy(items, 0, a, 0, size);
+        items = a;
     }
     public void printDeque() {
         int i = firstIndex;
