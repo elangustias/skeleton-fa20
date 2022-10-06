@@ -17,6 +17,12 @@ public class ArrayDeque<ItemType> {
         firstIndex = 0;
         lastIndex = 0;
     }
+    public boolean isEmpty() {
+        return size == 8;
+    }
+    public int size() {
+        return size - 8;
+    }
     public void resize(int capacity) {
         ItemType[] a = (ItemType[]) new Object[capacity];
         System.arraycopy(items, 0, a, 0, size);
@@ -67,26 +73,29 @@ public class ArrayDeque<ItemType> {
         }
         return nl;
     }
-    public ItemType getLast() {
-        return items[size-1];
+    public void printDeque() {
+        int i = firstIndex;
+        int len = size - 8;
+        while (len > 0) {
+            if (i == items.length - 1) {
+                i = 0;
+            }
+            System.out.print(items[i] + " ");
+            i += 1;
+            len -= 1;
+        }
+        System.out.println("");
     }
-    public ItemType get(int i) {
-        return items[i];
-    }
-    public int size() {
-        return size;
-    }
-    public ItemType removeLast() {
-        ItemType last = getLast();
-        items[size-1] = null;
-        size -= 1;
-        return last; // DON'T KNOW WHY I'M GETTING AN ERROR HERE
-    }
-
     public static void main(String[] args) {
         ArrayDeque<Integer> a = new ArrayDeque<>();
+        System.out.println(a.isEmpty());
+        System.out.println(a.size());
         a.addLast(3);
         a.addLast(2);
+        System.out.println(a.size());
         a.addLast(1);
+        System.out.println(a.size());
+        System.out.println(a.isEmpty());
+        a.printDeque();
     }
 }
