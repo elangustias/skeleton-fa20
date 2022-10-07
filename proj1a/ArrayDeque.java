@@ -25,7 +25,8 @@ public class ArrayDeque<ItemType> {
     }
 
     /** Resizes through resize method if list is full. Checks where the next first index should be through
-     *  indexMovesLeft method, then adds the new first item to items.
+     *  indexMovesLeft method, then adds the new first item to items. If method creates the sole item in items,
+     *  keeps first and last indexes equal.
      */
     public void addFirst(ItemType item) {
         if (size == items.length + 8) {
@@ -35,10 +36,14 @@ public class ArrayDeque<ItemType> {
         items[newFirst] = item;
         firstIndex = newFirst;
         size += 1;
+        if (size == 9) {
+            lastIndex = firstIndex;
+        }
     }
 
     /** Resizes through resize if list is full. Checks where the next last index should be through
-     *  indexMovesRight method, then adds a new last item to items.
+     *  indexMovesRight method, then adds a new last item to items. If method creates the sole item in items,
+     *  keeps first and last indexes equal.
      */
     public void addLast(ItemType item) {
         if (size == items.length + 8) {
@@ -48,9 +53,12 @@ public class ArrayDeque<ItemType> {
         items[newLast] = item;
         lastIndex = newLast;
         size += 1;
+        if (size == 9) {
+            firstIndex = lastIndex;
+        }
     }
     /** Removes first item. Checks if items needs to be trimmed down through resize. If removing an item causes
-     *  the list to become empty, resets first, last to 0,0. Otherwise, reassigns new first index through
+     *  the list to become empty, keeps first and last indexes equal. Otherwise, reassigns new first index through
      *  indexMovesRight. Returns the removed first item.
      */
     public ItemType removeFirst() {
@@ -61,10 +69,7 @@ public class ArrayDeque<ItemType> {
             if (items.length >= 16 && ((size - 8) / items.length) * 100 < 25) {
                 resize(size);
             }
-            if (size == 8) {
-                lastIndex = 0;
-                firstIndex = 0;
-            } else {
+            if (size > 8) {
                 firstIndex = indexMovesRight(firstIndex);
             }
             return firstItem;
@@ -72,7 +77,7 @@ public class ArrayDeque<ItemType> {
         return null;
     }
     /** Removes last item. Checks if items need to be trimmed down through resize. If removing an item causes
-     *  the list to become empty, resets first, last to 0,0. Otherwise, reassigns new last index through
+     *  the list to become empty, keeps first and last indexes equal. Otherwise, reassigns new last index through
      *  indexMovesLeft. Returns the removed last item.
      */
     public ItemType removeLast() {
@@ -83,10 +88,7 @@ public class ArrayDeque<ItemType> {
             if (items.length >= 16 && ((size - 8) / items.length) * 100 < 25) {
                 resize(size);
             }
-            if (size == 8) {
-                firstIndex = 0;
-                lastIndex = 0;
-            } else {
+            if (size > 8) {
                 lastIndex = indexMovesLeft(lastIndex);
             }
             return lastItem;
@@ -164,5 +166,21 @@ public class ArrayDeque<ItemType> {
         System.out.println(a.size());
         System.out.println(a.isEmpty());
         a.printDeque();
+        a.addFirst(5);
+        a.addFirst(8);
+        a.addFirst(21);
+        System.out.println(a.size());
+        a.addLast(30);
+        a.addLast(32);
+        a.addLast(13);
+        a.addLast(16);
+        a.addFirst(50);
+        a.addFirst(15);
+        a.addFirst(55);
+        System.out.println(a.size());
+        a.printDeque();
+        a.addLast(61);
+        a.addLast(68);
+        a.addLast(81);
     }
 }
