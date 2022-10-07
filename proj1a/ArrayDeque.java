@@ -1,10 +1,10 @@
 public class ArrayDeque<ItemType> {
     /** INVARIANTS:
-     *  1. The position of the next item to be added (using addLast) is always either index of first item + size, or if
-     *     item + size is greater than length, (index of first item + size) - length...
-     *  2. The number of items in the AList is always size
-     *  3. The position of the last item in the CIRCULAR list is always either the index of the first item + size - 1,
-     *     or if index first item + size - 1 is greater than length, (index of first item + size - 1) - length...
+     *  1. The position of the next item to be added (using addLast) is always either firstIndex + size, or if
+     *     firstIndex + size is greater than length, firstIndex + size - length.
+     *  2. The number of items in the array is always size.
+     *  3. The position of the last item in the CIRCULAR list is always either firstIndex + size - 1,
+     *     or if firstIndex + size - 1 is greater than length, firstIndex + size - 1 - length.
      */
     private int size;
     private int firstIndex;
@@ -23,130 +23,97 @@ public class ArrayDeque<ItemType> {
     public int size() {
         return size - 8;
     }
+
+    /** Resizes through resize method if list is full. Checks where the next first index should be through
+     *  indexMovesLeft method, then adds the new first item to items.
+     */
     public void addFirst(ItemType item) {
         if (size == items.length + 8) {
-            addResize(size * 2);
+            resize(size * 2);
         }
-        int nf = plusFirst();
-        items[nf] = item;
-        firstIndex = nf;
+        int newFirst = indexMovesLeft(firstIndex);
+        items[newFirst] = item;
+        firstIndex = newFirst;
         size += 1;
     }
-    public int plusFirst() {
-        int nf;
-        // If list is empty, plusFirst needs to remain index 0.
-        if (size == 8) {
-            nf = 0;
-        // If first index is 0 BUT the list isN't empty, we can go ahead and assign new first index.
-        } else if (firstIndex == 0){
-            nf = items.length - 1;
-        } else {
-            nf = firstIndex - 1;
-        }
-        return nf;
-    }
+
+    /** Resizes through resize if list is full. Checks where the next last index should be through
+     *  indexMovesRight method, then adds a new last item to items.
+     */
     public void addLast(ItemType item) {
         if (size == items.length + 8) {
-            addResize(size * 2);
+            resize(size * 2);
         }
-        int nl = plusLast();
-        items[nl] = item;
-        lastIndex = nl;
+        int newLast = indexMovesRight(lastIndex);
+        items[newLast] = item;
+        lastIndex = newLast;
         size += 1;
     }
-    public int plusLast() {
-        int nl;
-        if (size == 8 || lastIndex == items.length - 1) {
-            nl = 0;
-        } else {
-            nl = lastIndex + 1;
-        }
-        return nl;
-    }
-    private void restart() {
-        firstIndex = 0;
-        lastIndex = 0;
-    }
-    public ItemType removeFirst() {
-        if (size == 8) {return null;}
-        ItemType rf = items[firstIndex];
-        items[firstIndex] = null;
-        size -= 1;
-        if (items.length >= 16 && ((size-8) / items.length) < 0.25) {
-            removeResize();
-        }
-        int nf = minusFirst();
-        firstIndex = nf;
-        return rf;
-    }
-    public ItemType removeLast() {
-        if (size == 8) {return null;}
-        ItemType rl = items[lastIndex];
-        items[lastIndex] = null;
-        size -= 1;
-        if (items.length >= 16 && ((size-8) / items.length) < 0.25) {
-            removeResize();
-        }
-        int nl = minusLast();
-        lastIndex = nl;
-        return rl;
-    }
-    /** MINUSFIRST/MINUSLAST serve two functions:
-     *  1) If removing causes the list to become empty, it will reset the indices first, last to 0, 0.
-     *  This is to avoid a fringe case where the empty list now has first and last pointing at different indices
-     *  after updating only first or last through either of the two remove functions.
-     *  2) Otherwise, it just updates the new index for first or last, just like plusFirst/plusLast.
+    /** Removes first item. Checks if items needs to be trimmed down through resize. If removing an item causes
+     *  the list to become empty, resets first, last to 0,0. Otherwise, reassigns new first index through
+     *  indexMovesRight. Returns the removed first item.
      */
-    private int minusFirst() {
-        int nf;
-        if (size == 8) {
-            restart();
-            nf = 0;
-        } else if (firstIndex == items.length - 1) {
-            nf = 0;
-        } else {
-            nf = firstIndex + 1;
-        }
-        return nf;
-    }
-    private int minusLast() {
-        int nl;
-        if (size == 8) {
-            restart();
-            nl = 0;
-        } else if (lastIndex == 0) {
-            nl = size - 1;
-        } else {
-            nl = lastIndex - 1;
-        }
-        return nl;
-    }
-    public void removeResize() {
-        if (size == 8) {
-            items = (ItemType[]) new Object[15];
-        } else {
-            /** Setting new length to size seems reasonable as size has 8 extra spaces, which is the midway
-             *  point number right between having to make list bigger or smaller.
-             */
-            ItemType[] a = (ItemType[]) new Object[size];
-            int oldIndex = firstIndex;
-            int newIndex = 0;
-            int len = size - 8;
-            while (len > 0) {
-                if (oldIndex == items.length) {
-                    oldIndex = 0;
-                }
-                a[newIndex] = items[oldIndex];
-                oldIndex += 1;
-                newIndex += 1;
-                len -= 1;
+    public ItemType removeFirst() {
+        if (size > 8) {
+            ItemType firstItem = items[firstIndex];
+            items[firstIndex] = null;
+            size -= 1;
+            if (items.length >= 16 && ((size - 8) / items.length) * 100 < 25) {
+                resize(size);
             }
-            items = a;
-            firstIndex = 0;
-            lastIndex = size - 9;
+            if (size == 8) {
+                lastIndex = 0;
+                firstIndex = 0;
+            } else {
+                firstIndex = indexMovesRight(firstIndex);
+            }
+            return firstItem;
         }
+        return null;
     }
-    public void addResize(int capacity) {
+    /** Removes last item. Checks if items need to be trimmed down through resize. If removing an item causes
+     *  the list to become empty, resets first, last to 0,0. Otherwise, reassigns new last index through
+     *  indexMovesLeft. Returns the removed last item.
+     */
+    public ItemType removeLast() {
+        if (size > 8) {
+            ItemType lastItem = items[lastIndex];
+            items[lastIndex] = null;
+            size -= 1;
+            if (items.length >= 16 && ((size - 8) / items.length) * 100 < 25) {
+                resize(size);
+            }
+            if (size == 8) {
+                firstIndex = 0;
+                lastIndex = 0;
+            } else {
+                lastIndex = indexMovesLeft(lastIndex);
+            }
+            return lastItem;
+        }
+        return null;
+    }
+    // Gives next first index when adding a first item OR next last index when removing a last item.
+    public int indexMovesLeft(int currIndex) {
+        int newIndex;
+        if (currIndex == 0){
+            newIndex = items.length - 1;
+        } else {
+            newIndex = currIndex - 1;
+        }
+        return newIndex;
+    }
+    // Gives next last index when adding a last item OR next first index when removing a first item.
+    public int indexMovesRight(int currIndex) {
+        int newIndex;
+        if (currIndex == items.length - 1) {
+            newIndex = 0;
+        } else {
+            newIndex = currIndex + 1;
+        }
+        return newIndex;
+    }
+    public void resize(int capacity) {
         ItemType[] a = (ItemType[]) new Object[capacity];
         int oldIndex = firstIndex;
         int newIndex = 0;
@@ -162,7 +129,7 @@ public class ArrayDeque<ItemType> {
         }
         items = a;
         firstIndex = 0;
-        lastIndex = size - 9;
+        lastIndex = newIndex;
     }
     public ItemType get(int index) {
         if (index >= size - 8) {
