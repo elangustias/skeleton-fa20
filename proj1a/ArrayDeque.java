@@ -9,10 +9,10 @@ public class ArrayDeque<ItemType> {
     private int size;
     private int firstIndex;
     private int lastIndex;
-    private ItemType[] items; // DOES THIS GO HERE OR IN THE ALIST CONSTRUCTOR???
+    private ItemType[] items;
 
     public ArrayDeque() {
-        items = (ItemType[]) new Object[8];
+        items = (ItemType[]) new Object[15];
         size = 8; // WHY????
         firstIndex = 0;
         lastIndex = 0;
@@ -24,24 +24,20 @@ public class ArrayDeque<ItemType> {
         return size - 8;
     }
     public void addFirst(ItemType item) {
-        // If size is 8, ie if the list is empty, we will just make sure the next starting index is 0
         if (size == items.length + 8) {
-            // HERE IS WHERE I'LL DO THE NECESSARY RESIZE OPERATION
-        } else {
-            // I've moved the task of checking whether the list is empty to the nextFirst method to keep this clean
-            int nf = nextFirst();
-            // These below might be able to be used generally for both the if and the else
-            items[nf] = item;
-            firstIndex = nf;
+            addResize(size * 2);
         }
+        int nf = plusFirst();
+        items[nf] = item;
+        firstIndex = nf;
         size += 1;
     }
-    public int nextFirst() {
+    public int plusFirst() {
         int nf;
-        // If list is empty, nextFirst needs to remain index 0
+        // If list is empty, plusFirst needs to remain index 0.
         if (size == 8) {
             nf = 0;
-        // If first index is 0 BUT the list ins't empty, we can go ahead and assigna  new first index
+        // If first index is 0 BUT the list isN't empty, we can go ahead and assign new first index.
         } else if (firstIndex == 0){
             nf = items.length - 1;
         } else {
@@ -51,15 +47,14 @@ public class ArrayDeque<ItemType> {
     }
     public void addLast(ItemType item) {
         if (size == items.length + 8) {
-            // HERE IS WHERE I'LL DO THE NECESSARY RESIZE OPERATION
-        } else {
-            int nl = nextLast();
-            items[nl] = item;
-            lastIndex = nl;
+            addResize(size * 2);
         }
+        int nl = plusLast();
+        items[nl] = item;
+        lastIndex = nl;
         size += 1;
     }
-    public int nextLast() {
+    public int plusLast() {
         int nl;
         if (size == 8 || lastIndex == items.length - 1) {
             nl = 0;
@@ -77,34 +72,112 @@ public class ArrayDeque<ItemType> {
         ItemType rf = items[firstIndex];
         items[firstIndex] = null;
         size -= 1;
-        // I NEED THIS IF STATEMENT BC OTHERWISE FIRST AND LAST WON'T BE THE SAME EVEN THOUGH SIZE IS 0
-        // EG IF I REMOVELAST AND IT'S THE LAST ITEM IN LIST, IE FIRST AND LAST, LAST WILL BE UPDATED TO THE NEXT
-        // INDEX BUT FIRST WON'T. BETTER TO JUST RESTART THE INDICES WHEN WE'RE BACK TO AN EMPTY LIST
-        if (size == 8) {
-            restart();
-        } else {
-            /** HERE CHECK WITH IF STATEMENT WHETHER ITEMS NEEDS A REORDERING + RESIZING TO MAKE SMALLER.
-             *  WILL NEED A NEW FUNC THAT DOES BOTH, FIRST SETS THE ITEMS TO START AT INDEX 0, ...
-             *  AND THEN CUTS OFF EXCESS BOXES UNTIL DESIRED SIZE.
-             *  IF ITEMS.LENGTH >= 16 && (SIZE - 8) / ITEMS.LENGTH  < 0.25 (IE 25%), THEN TRIM LENGTH DOWN TO 15
-             *  SAME PROCESS FOR  REMOVELAST
-             */
+        if (items.length >= 16 && ((size-8) / items.length) < 0.25) {
+            removeResize();
         }
-        int nf = nextFirst(); // THIS WON'T WORK. NEED A NEXTFIRST THAT MOVES FORWARD RATHER THAN BACK...
-        // RENAME NEXTFIRST, NEXTLAST TO PLUSFIRST, PLUSLAST AND CREATE MINUSFIRST, MINUSLAST AS HELPERS FOR REMOVE
+        int nf = minusFirst();
         firstIndex = nf;
         return rf;
     }
-    public void resize(int capacity) {
+    public ItemType removeLast() {
+        if (size == 8) {return null;}
+        ItemType rl = items[lastIndex];
+        items[lastIndex] = null;
+        size -= 1;
+        if (items.length >= 16 && ((size-8) / items.length) < 0.25) {
+            removeResize();
+        }
+        int nl = minusLast();
+        lastIndex = nl;
+        return rl;
+    }
+    /** MINUSFIRST/MINUSLAST serve two functions:
+     *  1) If removing causes the list to become empty, it will reset the indices first, last to 0, 0.
+     *  This is to avoid a fringe case where the empty list now has first and last pointing at different indices
+     *  after updating only first or last through either of the two remove functions.
+     *  2) Otherwise, it just updates the new index for first or last, just like plusFirst/plusLast.
+     */
+    private int minusFirst() {
+        int nf;
+        if (size == 8) {
+            restart();
+            nf = 0;
+        } else if (firstIndex == items.length - 1) {
+            nf = 0;
+        } else {
+            nf = firstIndex + 1;
+        }
+        return nf;
+    }
+    private int minusLast() {
+        int nl;
+        if (size == 8) {
+            restart();
+            nl = 0;
+        } else if (lastIndex == 0) {
+            nl = size - 1;
+        } else {
+            nl = lastIndex - 1;
+        }
+        return nl;
+    }
+    public void removeResize() {
+        if (size == 8) {
+            items = (ItemType[]) new Object[15];
+        } else {
+            /** Setting new length to size seems reasonable as size has 8 extra spaces, which is the midway
+             *  point number right between having to make list bigger or smaller.
+             */
+            ItemType[] a = (ItemType[]) new Object[size];
+            int oldIndex = firstIndex;
+            int newIndex = 0;
+            int len = size - 8;
+            while (len > 0) {
+                if (oldIndex == items.length) {
+                    oldIndex = 0;
+                }
+                a[newIndex] = items[oldIndex];
+                oldIndex += 1;
+                newIndex += 1;
+                len -= 1;
+            }
+            items = a;
+            firstIndex = 0;
+            lastIndex = size - 9;
+        }
+    }
+    public void addResize(int capacity) {
         ItemType[] a = (ItemType[]) new Object[capacity];
-        System.arraycopy(items, 0, a, 0, size);
+        int oldIndex = firstIndex;
+        int newIndex = 0;
+        int len = size - 8;
+        while (len > 0) {
+            if (oldIndex == items.length) {
+                oldIndex = 0;
+            }
+            a[newIndex] = items[oldIndex];
+            oldIndex += 1;
+            newIndex += 1;
+            len -= 1;
+        }
         items = a;
+        firstIndex = 0;
+        lastIndex = size - 9;
+    }
+    public ItemType get(int index) {
+        if (index >= size - 8) {
+            return null;
+        } else if (firstIndex + index > items.length) {
+            return items[firstIndex + index - items.length];
+        } else {
+            return items[index];
+        }
     }
     public void printDeque() {
         int i = firstIndex;
         int len = size - 8;
         while (len > 0) {
-            if (i == items.length - 1) {
+            if (i == items.length) {
                 i = 0;
             }
             System.out.print(items[i] + " ");
