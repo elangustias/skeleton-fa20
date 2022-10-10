@@ -16,7 +16,7 @@ public class LinkedListDeque<ItemType> implements Deque<ItemType> {
         }
     }
 
-    private LinkedListDeque() {
+    public LinkedListDeque() {
         sentinel = new LinkedNode(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
