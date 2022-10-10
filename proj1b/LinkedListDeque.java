@@ -1,4 +1,4 @@
-public class LinkedListDeque<ItemType> {
+public class LinkedListDeque<ItemType> implements Deque<ItemType> {
     // PROJECT SITE USES "T" AS THE ITEMTYPE SO MIGHT HAVE TO UPDATE FOR TESTING
     // SETTING SENTINEL'S ITEM AS NULL HELPS ME OUT WITH THE GET METHOD;
     private int size;
@@ -16,37 +16,37 @@ public class LinkedListDeque<ItemType> {
         }
     }
 
-    public LinkedListDeque() {
+    private LinkedListDeque() {
         sentinel = new LinkedNode(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
     }
-    public LinkedListDeque(ItemType item) {
+    private LinkedListDeque(ItemType item) {
         sentinel = new LinkedNode(null, null, null);
         sentinel.next = new LinkedNode(item, sentinel, sentinel);
         sentinel.prev = sentinel.next;
         size = 1;
     }
-
+    @Override
     public void addFirst(ItemType item) {
         LinkedNode prevFirst = sentinel.next;
         sentinel.next = new LinkedNode(item, prevFirst, sentinel);
         prevFirst.prev = sentinel.next;
         size += 1;
     }
+    @Override
     public void addLast(ItemType item) {
         LinkedNode prevLast = sentinel.prev;
         sentinel.prev = new LinkedNode(item, sentinel, prevLast);
         prevLast.next = sentinel.prev;
         size += 1;
     }
-    public boolean isEmpty() {
-        return this.size == 0;
-    }
+    @Override
     public int size() {
         return this.size;
     }
+    @Override
     public void printDeque() {
         LinkedNode dequeCopy = sentinel.next; // SHOULD I BE USING LINKEDNODE OR LINKELISTDEQUE HERE???
         while (dequeCopy != sentinel) {
@@ -55,6 +55,7 @@ public class LinkedListDeque<ItemType> {
         }
         System.out.println(" "); // Project asks to print out new line after all items have been printed
     }
+    @Override
     public ItemType removeFirst() {
         if (size > 0) {
             ItemType rf = sentinel.next.item;
@@ -65,6 +66,7 @@ public class LinkedListDeque<ItemType> {
         }
         return null;
     }
+    @Override
     public ItemType removeLast() {
         if (size > 0) {
             ItemType rl = sentinel.prev.item;
@@ -75,6 +77,7 @@ public class LinkedListDeque<ItemType> {
         }
         return null;
     }
+    @Override
     public ItemType get(int index) {
         LinkedNode dequeCopy = sentinel.next;
         // I NEED TO DO THIS BELOW IN ORDER TO ACOUNT FOR GETTING INPUTS ABOVE THE LENGTH OF THE DEQUE
