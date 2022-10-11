@@ -8,4 +8,18 @@ public class Palindrome {
         }
         return link;
     }
+    public boolean isPalindrome(String word) {
+        if (word == null) {
+            return false;
+        }
+        Deque<Character> link = wordToDeque(word);
+        return isPalindromeHelper(link);
+    }
+    public boolean isPalindromeHelper(Deque<Character> link) {
+        if (link.size() <= 1) {
+            return true;
+        }
+        boolean firstIsLast = link.removeFirst() == link.removeLast();
+        return (firstIsLast && isPalindromeHelper(link));
+    }
 }
