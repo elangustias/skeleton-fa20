@@ -22,4 +22,7 @@ public class Palindrome {
         boolean firstIsLast = link.removeFirst() == link.removeLast();
         return (firstIsLast && isPalindromeHelper(link));
     }
+    public boolean isPalindrome(String word, CharacterComparator cc) {
+        return true;
+    }
 }
