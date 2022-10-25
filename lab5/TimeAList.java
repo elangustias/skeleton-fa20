@@ -23,19 +23,23 @@ public class TimeAList {
     public static void timeAListConstruction() {
         int size = 1000;
         ArrayList<Integer> listOfSizes = new ArrayList<>();
+        ArrayList<Integer> listOfOps = new ArrayList<>();
         ArrayList<Double> times = new ArrayList<>();
         for (int i = 0; i <= 8; i++) {
+            int currSize = 0;
             Stopwatch sw = new Stopwatch();
             AList<Integer> lst = new AList<>();
             for (int i2 = 0; i2 < size; i2++) {
                 lst.addLast(1);
+                currSize++;
             }
             double timeInSeconds = sw.elapsedTime();
             listOfSizes.add(lst.size());
+            listOfOps.add(currSize);
             times.add(timeInSeconds);
             size *= 2;
         }
-        printTimingTable(listOfSizes, times, listOfSizes);
+        printTimingTable(listOfSizes, times, listOfOps);
     }
 
 
