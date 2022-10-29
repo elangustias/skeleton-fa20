@@ -1,3 +1,4 @@
+import edu.princeton.cs.algs4.StdAudio;
 import es.datastructur.synthesizer.GuitarString;
 
 public class GuitarHero {
@@ -15,17 +16,10 @@ public class GuitarHero {
             /* check if the user has typed a key; if so, process it */
             if (StdDraw.hasNextKeyTyped()) {
                 char key = StdDraw.nextKeyTyped();
-                int kb = keyboard.indexOf(key);
-                keys[kb].pluck();
+                GuitarString string = keys[keyboard.indexOf(key)];
+                string.pluck();
             }
-            /* compute the superposition of samples */
-            // double sample = stringA.sample() + stringC.sample();
-            /* play the sample on standard audio */
-            // StdAudio.play(sample);
-            /* advance the simulation of each guitar string by one step */
-            // stringA.tic();
-            // stringC.tic();
-
+            // UNFINISHED - Look at GuitarHeroLite
         }
     }
 }

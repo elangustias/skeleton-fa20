@@ -1,5 +1,6 @@
 package es.datastructur.synthesizer;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 //TODO: Make sure to make this class implement BoundedQueue<T>
 
@@ -32,6 +33,9 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
      */
     @Override
     public void enqueue(T x) {
+        if (isFull()) {
+            throw new RuntimeException("Ring Buffer overflow");
+        }
         rb[last] = x;
         fillCount += 1;
         last = (last + 1) % capacity;
@@ -43,6 +47,9 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
      */
     @Override
     public T dequeue() {
+        if (isEmpty()) {
+            throw new RuntimeException("Ring Buffer underflow");
+        }
         T firstItem = rb[first];
         fillCount -= 1;
         first = (first + 1) % capacity;
@@ -68,5 +75,50 @@ public class ArrayRingBuffer<T> implements BoundedQueue<T> {
     @Override
     public int fillCount() {
         return fillCount;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null ||
+                this.getClass() != o.getClass() ||
+                this.fillCount() != ((ArrayRingBuffer<?>) o).fillCount()) {
+            return false;
+        }
+        ArrayRingBuffer<?> other = (ArrayRingBuffer<?>) o;
+        Iterator<?> otherIter = other.iterator();
+        for (T item : this) {
+            if (!item.equals(otherIter.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public Iterator<T> iterator() {
+        return new BoundedQueueIterator(rb);
+    }
+    private class BoundedQueueIterator implements Iterator<T> {
+        int index;
+        int size;
+        T[] arr;
+        public BoundedQueueIterator(T[] arr) {
+            index = first;
+            size = fillCount;
+            this.arr = arr;
+        }
+        @Override
+        public boolean hasNext() {
+            return size > 0;
+        }
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            T curr = arr[index % capacity];
+            index += 1;
+            size -= 1;
+            return curr;
+        }
     }
 }
