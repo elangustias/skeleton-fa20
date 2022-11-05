@@ -15,7 +15,9 @@ public class UnionFind {
 
     /* Throws an exception if v1 is not a valid vertex. */
     private void validate(int v1) {
-        // TODO
+        if (v1 < 0 || v1 >= parent.length) {
+            throw new IllegalArgumentException();
+        }
     }
 
     /* Returns the size of the set v1 belongs to. */
@@ -32,8 +34,9 @@ public class UnionFind {
 
     /* Returns true if nodes v1 and v2 are connected. */
     public boolean isConnected(int v1, int v2) {
-        // TODO
-        return false;
+        int rootV1 = find(v1);
+        int rootV2 = find(v2);
+        return rootV1 == rootV2;
     }
 
     /* Connects two elements v1 and v2 together. v1 and v2 can be any valid 
@@ -42,14 +45,29 @@ public class UnionFind {
        vertex with itself or vertices that are already connected should not 
        change the sets but may alter the internal structure of the data. */
     public void connect(int v1, int v2) {
-        // TODO
+        validate(v1);
+        validate(v2);
+        int rootV1 = find(v1);
+        int rootV2 = find(v2);
+        if (rootV1 == rootV2) {
+            return ;
+        } else if (sizeOf(rootV1) > sizeOf(rootV2)) {
+            parent[rootV1] += parent[rootV2];
+            parent[rootV2] = rootV1;
+        } else {
+            parent[rootV2] += parent[rootV1];
+            parent[rootV1] = rootV2;
+        }
     }
 
     /* Returns the root of the set v1 belongs to. Path-compression is employed
        allowing for fast search-time. */
     public int find(int v1) {
-        // TODO
-        return -1;
+        int curr = v1;
+        while (parent(curr) >= 0) {
+            curr = parent(curr);
+        }
+        return curr;
     }
 
 }
