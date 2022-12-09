@@ -20,6 +20,7 @@ public class Percolation {
         openSites = 0;
         virtualRootIn = 0;
         virtualTailIn = numSites + 1;
+        isOpenArr = new boolean[numSites + 2];
         uf = new WeightedQuickUnionUF(numSites + 2);
         for (int i = 1; i <= numSites; i++) {
             isOpenArr[i] = false;
@@ -42,7 +43,7 @@ public class Percolation {
         conns[1] = index - 1;
         conns[2] = index + 1;
         conns[3] = index + numRowsCols;
-        // This if statement checks if it's a top row  or bottom site being opened, and if so, connects it to virtual root or tail.
+        // This if statement checks if it's a top or bottom row site being opened, and if so, connects it to virtual root or tail.
         if (index <= numRowsCols) {
             uf.union(virtualRootIn, index);
         } else if (index > (numSites - numRowsCols)) {
@@ -59,7 +60,6 @@ public class Percolation {
             }
         }
     }
-    // Not sure if that's all i need for Percolation constructor
     public void open(int row, int col) {
         int index = findIndex(row, col);
         validate(index);
