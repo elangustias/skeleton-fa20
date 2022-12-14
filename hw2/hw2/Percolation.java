@@ -1,6 +1,7 @@
 package hw2;
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import edu.princeton.cs.introcs.StdRandom;
 
 public class Percolation {
     private WeightedQuickUnionUF uf;
@@ -22,7 +23,7 @@ public class Percolation {
         virtualTailIn = numSites + 1;
         isOpenArr = new boolean[numSites + 2];
         uf = new WeightedQuickUnionUF(numSites + 2);
-        for (int i = 1; i <= numSites; i++) {
+        for (int i = virtualRootIn + 1; i < virtualTailIn; i++) {
             isOpenArr[i] = false;
         }
     }
@@ -38,26 +39,31 @@ public class Percolation {
     }
     /* When a new site is opened, connectNeighbors checks if site is next to an open site, and unions them accordingly. */
     private void connectNeighbors(int index) {
-        int[] conns = new int[4];
-        conns[0] = index - numRowsCols;
-        conns[1] = index - 1;
-        conns[2] = index + 1;
-        conns[3] = index + numRowsCols;
-        // This if statement checks if it's a top or bottom row site being opened, and if so, connects it to virtual root or tail.
+        // Checks if it's a top or bottom row site being opened, and if so, connects it to virtual root or tail.
         if (index <= numRowsCols) {
             uf.union(virtualRootIn, index);
         } else if (index > (numSites - numRowsCols)) {
             uf.union(virtualTailIn, index);
         }
-        // Off by one???
-        // Might not even need these conditionals, i can possibly just set root index to open in the constructor.
-        for (int i = 0; i < conns.length; i++) {
-            int currNeighborIndex = conns[i];
-            if (currNeighborIndex > virtualRootIn
-                    && currNeighborIndex < virtualTailIn
-                    && isOpenArr[currNeighborIndex]) {
-                uf.union(index, currNeighborIndex);
-            }
+        // Checks if there is an open site above index that needs to be connected.
+        if (index - numRowsCols > virtualRootIn && isOpenArr[index - numRowsCols]) {
+            uf.union(index, index - numRowsCols);
+        }
+        // Checks if there is an open site below index that needs to be connected.
+        if (index + numRowsCols < virtualTailIn && isOpenArr[index + numRowsCols]) {
+            uf.union(index, index + numRowsCols);
+        }
+        /* Checks if there is an open site to the left index that needs to be connected,
+         * checking also that index isn't in the leftmost column.
+         */
+        if (index - 1 > virtualRootIn && isOpenArr[index - 1] && index % numRowsCols != 1) {
+            uf.union(index, index - 1);
+        }
+        /* Checks if there is an open site to the right index that needs to be connected,
+         * checking also that index isn't in the rightmost column.
+         */
+        if (index + 1 < virtualTailIn && isOpenArr[index + 1] && index % numRowsCols != 0) {
+            uf.union(index, index + 1);
         }
     }
     public void open(int row, int col) {
@@ -86,6 +92,12 @@ public class Percolation {
         return uf.connected(virtualRootIn, virtualTailIn);
     }
     public static void main(String[] args) {
-        // use for unit testing
+        int[] x = new int[40];
+        for (int i = 0; i < x.length; i++) {
+            x[i] = i;
+        }
+        StdRandom.shuffle(x);
+        StdRandom.shuffle(x);
+
     }
 }
