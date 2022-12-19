@@ -92,12 +92,16 @@ public class Percolation {
         return uf.connected(virtualRootIn, virtualTailIn);
     }
     public static void main(String[] args) {
-        int[] x = new int[40];
-        for (int i = 0; i < x.length; i++) {
-            x[i] = i;
-        }
-        StdRandom.shuffle(x);
-        StdRandom.shuffle(x);
+        /** Percolation p = new Percolation(5);
+        p.open(4, 4);
+        System.out.println(p.isOpen(4,4));
+        p.open(0,1); */
 
+        PercolationFactory pf = new PercolationFactory();
+        PercolationStats ps = new PercolationStats(100, 50, pf);
+        System.out.println(ps.stddev());
+        System.out.println(ps.mean());
+        System.out.println(ps.confidenceHigh());
+        System.out.println(ps.confidenceLow());
     }
 }
