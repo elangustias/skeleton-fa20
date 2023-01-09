@@ -81,29 +81,36 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         if (tree.left != null) {
             printHelper(tree.left);
         }
-        System.out.println(tree.value);
+        System.out.print(tree.value + " ");
         if (tree.right != null) {
             printHelper(tree.right);
         }
     }
 
     @Override
-    public Set<K> keySet() {
-        throw new UnsupportedOperationException();
-    }
+    public Set<K> keySet() { throw new UnsupportedOperationException(); }
 
     @Override
-    public V remove(K key) {
-        throw new UnsupportedOperationException();
-    }
+    public V remove(K key) { throw new UnsupportedOperationException(); }
 
     @Override
-    public V remove(K key, V value) {
-        throw new UnsupportedOperationException();
-    }
+    public V remove(K key, V value) { throw new UnsupportedOperationException(); }
 
     @Override
-    public Iterator<K> iterator() {
-        throw new UnsupportedOperationException();
+    public Iterator<K> iterator() { throw new UnsupportedOperationException(); }
+    public static void main(String[] args) {
+        BSTMap dict = new BSTMap();
+        dict.put(1, 1);
+        dict.put(3, 3);
+        dict.put(9, 9);
+        dict.put(7, 7);
+        dict.put(8, 8);
+        dict.put(2, 2);
+        dict.put(4, 4);
+        dict.put(6, 6);
+        dict.put(5, 5);
+        dict.printInOrder();
+        System.out.println();
+        System.out.println(dict.size());
     }
 }
