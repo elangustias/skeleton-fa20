@@ -15,13 +15,12 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             this.right = right;
         }
         private BST get(K key) {
+            if (this == null) {
+                return null;
+            }
             int cmp = key.compareTo(this.key);
             if (cmp == 0) {
                 return this;
-            } else if (cmp < 0 && left == null) {
-                return null;
-            } else if (cmp > 0 && right == null) {
-                return null;
             } else if (cmp < 0) {
                 return left.get(key);
             } else {
