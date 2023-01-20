@@ -3,21 +3,21 @@ import java.util.*;
 public class MyHashMap<K, V> implements Map61B<K, V> {
     private int size = 0;
     private double loadFactor;
-    private ArrayList<LinkedList<BucketItem>> buckets; // probably wrong
+    private LinkedList<BucketItem>[] buckets; // probably wrong
 
     /* Constructor if user offers no initial size or load factor. */
     public MyHashMap() {
-        buckets = new ArrayList<>(16);
+        buckets = new LinkedList[16];
         loadFactor = 0.75;
     }
     /* Constructor if user offers no load factor. */
     public MyHashMap(int initialSize) {
-        buckets = new ArrayList<>(initialSize);
+        buckets = new LinkedList[16];
         loadFactor = 0.75;
     }
     /* Constructor if user offers both initial size and load factor. */
     public MyHashMap(int initialSize, double loadFactor) {
-        buckets = new ArrayList<>(initialSize);
+        buckets = new LinkedList[16];
         this.loadFactor = loadFactor;
     }
     /* Container object for individual key/value pairs. */
@@ -34,7 +34,7 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     @Override
     public void clear() {
         size = 0;
-        buckets = new ArrayList<>(16);
+        buckets = new LinkedList[16];
     }
     /* Returns true if hash map contains specific K key, false otherwise. */
     @Override
@@ -43,19 +43,18 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         return value != null;
     }
     public int size() { return size; }
-    /* Utility function for get and put. Returns bucket corresponding to key to simplify methods. */
-    private LinkedList<BucketItem> getBucket(K key) {
-        int code = key.hashCode();
-        int index = code % buckets.size();
-        return buckets.get(index);
+    /* Utility function for get and put. Returns index corresponding to key to simplify methods. */
+    private int getIndex(K key) {
+        return Math.floorMod(key.hashCode(), buckets.length);
     }
     /* Returns mapped value for specified key if key exists. If key doesn't exist, returns null. */
     @Override
     public V get(K key) {
-        LinkedList<BucketItem> bucket = getBucket(key);
-        if (bucket == null) {
+        int index = getIndex(key);
+        if (buckets[index] == null) {
             return null;
         }
+        LinkedList<BucketItem> bucket = buckets[index];
         for (BucketItem item : bucket) {
             if (item.key.equals(key)) {
                 return item.value;
@@ -66,7 +65,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     /* Searches for key. If key already exists, updates its mapped value to given V value.
      * If key doesn't exist, creates new key/value pair and stores in appropriate bucketItem. */
     public void put(K key, V value) {
-        LinkedList<BucketItem> bucket = getBucket(key);
+        int index = getIndex(key);
+        LinkedList<BucketItem> bucket = buckets[index];
         if (bucket != null) {
             for (BucketItem item : bucket) {
                 if (item.key.equals(key)) {
@@ -74,33 +74,26 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
                     return;
                 }
             }
+        } else {
+            bucket = new LinkedList<>();
+            buckets[index] = bucket;
         }
         BucketItem pair = new BucketItem(key, value);
-        if (bucket == null) {
-            bucket = new LinkedList<>(); // figure out syntax later
-            bucket.add(pair);
-            int code = key.hashCode();
-            buckets.add(code % buckets.size(), bucket);
-        } else {
-            bucket.add(pair);
-        }
+        bucket.add(pair);
         size++;
-        buckets = resize();
+        double N = size;
+        double nBuckets = buckets.length;
+        if (N / nBuckets >= loadFactor) {
+            resize(buckets.length * 2);
+        }
     }
-    private ArrayList<LinkedList<BucketItem>> resize() {
-
-        if ((Double.valueOf(size) / Double.valueOf(buckets.size())) < loadFactor) {
-            return buckets;
+    private void resize(int newSize) {
+        Set<BucketItem> set = resizeSet();
+        buckets = new LinkedList[newSize];
+        size = 0;
+        for (BucketItem item : set) {
+            put(item.key, item.value);
         }
-        MyHashMap<K, V> dummy = new MyHashMap(buckets.size()*2, loadFactor);
-        for (LinkedList<BucketItem> bucket : buckets) {
-            if (bucket != null) {
-                for (BucketItem item : bucket) {
-                    dummy.put(item.key, item.value);
-                }
-            }
-        }
-        return dummy.buckets;
     }
     /* Utility method. Creates a HashSet containing all keys in MyHashMap object. */
     @Override
@@ -115,14 +108,39 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         }
         return keys;
     }
+    private Set<BucketItem> resizeSet() {
+        HashSet<BucketItem> items = new HashSet<>();
+        for (LinkedList<BucketItem> bucket : buckets) {
+            if (bucket != null) {
+                for (BucketItem item : bucket) {
+                    items.add(item);
+                }
+            }
+        }
+        return items;
+    }
     @Override
     public V remove(K key) { throw new UnsupportedOperationException(); }
     @Override
     public V remove(K key, V value) { throw new UnsupportedOperationException(); }
+
     @Override
     public Iterator<K> iterator() {
         HashSet<K> keys = (HashSet<K>) keySet();
         return keys.iterator();
     }
-
+    public static void main(String[] args) {
+        /* MyHashMap dict = new MyHashMap();
+        dict.put(1, 1);
+        dict.put(3, 3);
+        dict.put(9, 9);
+        dict.put(7, 7);
+        dict.put(8, 8);
+        dict.put(2, 2);
+        dict.put(4, 4);
+        dict.put(6, 6);
+        dict.put(5, 5); */
+        double x = 5;
+        System.out.print(x / 2);
+    }
 }
