@@ -82,17 +82,21 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         bucket.add(pair);
         size++;
         double N = size;
-        double nBuckets = buckets.length;
-        if (N / nBuckets >= loadFactor) {
+        if (N / buckets.length >= loadFactor) {
             resize(buckets.length * 2);
         }
     }
     private void resize(int newSize) {
-        Set<BucketItem> set = resizeSet();
+        LinkedList[] copy = buckets;
         buckets = new LinkedList[newSize];
         size = 0;
-        for (BucketItem item : set) {
-            put(item.key, item.value);
+        for (int i = 0; i < copy.length; i++) {
+            if (copy[i] != null) {
+                LinkedList<BucketItem> curr = copy[i];
+                for (BucketItem item : curr) {
+                    put(item.key, item.value);
+                }
+            }
         }
     }
     /* Utility method. Creates a HashSet containing all keys in MyHashMap object. */
@@ -107,17 +111,6 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
             }
         }
         return keys;
-    }
-    private Set<BucketItem> resizeSet() {
-        HashSet<BucketItem> items = new HashSet<>();
-        for (LinkedList<BucketItem> bucket : buckets) {
-            if (bucket != null) {
-                for (BucketItem item : bucket) {
-                    items.add(item);
-                }
-            }
-        }
-        return items;
     }
     @Override
     public V remove(K key) { throw new UnsupportedOperationException(); }
