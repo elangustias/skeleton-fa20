@@ -74,7 +74,7 @@ public class KDTreeTimeTest {
         printTimingTable(listOfSizes, listOfTimes, listOfOps);
     }
     public static void main(String[] args) {
-        timeNearest();
+        timeConstructor();
     }
 
 }

@@ -21,7 +21,7 @@ public class KDTree implements PointSet {
         if (t == null || areEqual(t.point, point)) {
             return new PointTree(point, parent);
         }
-        int order = pickDirection(t, point, depth);
+        int order = compareByDimension(t, point, depth);
         if (order == 0) {
             t.left = add(t.left, point, depth + 1, t);
         } else {
@@ -29,7 +29,6 @@ public class KDTree implements PointSet {
         }
         return t;
     }
-
     @Override
     public Point nearest(double x, double y) {
         Point point  = new Point(x, y);
@@ -41,7 +40,7 @@ public class KDTree implements PointSet {
         }
         bestPoint = updateBest(bestPoint, t.point, point);
         PointTree goodSide, badSide;
-        int order = pickDirection(t, point, depth);
+        int order = compareByDimension(t, point, depth);
         if (order == 0) {
             goodSide = t.left;
             badSide = t.right;
@@ -51,9 +50,9 @@ public class KDTree implements PointSet {
         }
         bestPoint = nearest(point, goodSide, bestPoint, depth + 1);
         if (badSide != null) {
-            Point bad = bestPointBad(point, t, depth);
+            Point bestBad = bestPointBad(point, t, depth);
             double distA = Point.distance(bestPoint, point);
-            double distB = Point.distance(bad, point);
+            double distB = Point.distance(bestBad, point);
             if (distB < distA) {
                 bestPoint = nearest(point, badSide, bestPoint, depth + 1);
             }
@@ -72,7 +71,7 @@ public class KDTree implements PointSet {
         }
         return bestPoint;
     }
-    private int pickDirection(PointTree t, Point p, int depth) {
+    private int compareByDimension(PointTree t, Point p, int depth) {
         double a, b;
         if (depth % 2 == 0) {
             a = t.point.getX();
@@ -87,77 +86,66 @@ public class KDTree implements PointSet {
             return 0;
         }
     }
+    private Double[] familyDimensions(PointTree t, int depth) {
+        Double[] fd = new Double[4];
+        if (depth % 2 == 0 && t.parent != null) {
+            fd[0] = t.point.getY();
+            fd[1] = t.parent.point.getY();
+            if (depth > 2) {
+                fd[2] = t.parent.parent.parent.point.getY();
+            }
+        } else if (depth % 2 == 1) {
+            fd[0] = t.point.getX();
+            fd[1] = t.parent.point.getX();
+            if (depth > 2) {
+                fd[2] = t.parent.parent.parent.point.getX();
+            }
+        }
+        return fd;
+    }
     private Point bestPointBad(Point point, PointTree t, int depth) {
         double greaterLimit = Double.POSITIVE_INFINITY;
         double lesserLimit = Double.NEGATIVE_INFINITY;
         double x = t.point.getX();
         double y = t.point.getY();
-        PointTree p = t.parent;
-        Point best;
-        if (depth % 2 == 0 && p != null) {
-            double pY = p.point.getY();
-            if (y < pY) {
-                greaterLimit = pY;
-                if (depth > 2) {
-                    double pppY = p.parent.parent.point.getY();
-                    if (pppY < pY) {
-                        lesserLimit = pppY;
-                    }
-                }
-                } else { // If y > pY
-                    lesserLimit = pY;
-                    if (depth > 2) {
-                        double pppY = p.parent.parent.point.getY();
-                        if (pppY >= pY) {
-                            greaterLimit = pppY;
-                        }
-                    }
-                }
-            } else if (depth % 2 == 1) { // If depth % 2 == 1 (p automatically isn't null)
-                double pX = p.point.getX();
-                if (x < pX) { // these might need to be <=
-                    greaterLimit = pX;
-                    if (depth > 2) {
-                        double pppX = p.parent.parent.point.getX();
-                        if (pppX < pX) {
-                            lesserLimit = pppX;
-                        }
-                    }
-                } else { // If x >= pX
-                    lesserLimit = pX;
-                    if (depth > 2) {
-                        double pppX = p.parent.parent.point.getX();
-                        if (pppX >= pX) {
-                            greaterLimit = pppX;
-                        }
-                    }
-                }
-            }
-            if (depth % 2 == 0) {
-                if (y < point.getY()) {
-                    best = new Point(x, Math.min(point.getY(), greaterLimit));
-                } else {
-                    best = new Point(x, Math.max(point.getY(), lesserLimit));
-                }
-            } else { // if depth % 2 == 1
-                if (x < point.getX()) {
-                    best = new Point(Math.min(point.getX(), greaterLimit), y);
-                } else {
-                    best = new Point(Math.max(point.getX(), lesserLimit), y);
-                }
-            }
-            return best;
+        /* Note: The code below is much cleaner than a solution that does the work done in
+         * familyDimensions directly within bestPointBad, without the arrays, but it is also
+         * a bit slower, taking ~2.2 seconds to compute 1 million nearest operations vs
+         * the previous ~2.0 seconds for the same computation without the helper method.
+         */
+        Double[] fd = familyDimensions(t, depth);
+        if (t.parent != null && fd[0] < fd[1]) {
+            greaterLimit = fd[1];
+        } else if (t.parent != null) {
+            lesserLimit = fd[1];
         }
+        if (depth > 2 && fd[2] < fd[1]) {
+            lesserLimit = fd[2];
+        } else if (depth > 2) {
+            greaterLimit = fd[2];
+        }
+        Point best = createBestBad(point, t, depth, greaterLimit, lesserLimit);
+        return best;
+    }
+    
+    private Point createBestBad(Point point, PointTree t, int depth, double gLim, double lessLim) {
+        Point best;
+        if (depth % 2 == 0) {
+            if (t.point.getY() < point.getY()) {
+                best = new Point(t.point.getX(), Math.min(point.getY(), gLim));
+            } else {
+                best = new Point(t.point.getX(), Math.max(point.getY(), lessLim));
+            }
+        } else { // If depth % 2 == 1
+            if (t.point.getX() < point.getX()) {
+                best = new Point(Math.min(point.getX(), gLim), t.point.getY());
+            } else {
+                best = new Point(Math.max(point.getX(), lessLim), t.point.getY());
+            }
+        }
+        return best;
+    }
     public static void main(String[] args) {
-        Point A = new Point(2.0, 3.0);
-        Point B = new Point(4.0, 2.0);
-        Point C = new Point(4.0, 5.0);
-        Point D = new Point(3.0, 3.0);
-        Point E = new Point(1, 5);
-        Point F = new Point(4, 4);
-        KDTree nn = new KDTree(List.of(A, B, C, D, E, F));
-        Point ret = nn.nearest(0, 7); // returns p2
-        double x = ret.getX();
-        double y = ret.getY();
+
     }
 }
