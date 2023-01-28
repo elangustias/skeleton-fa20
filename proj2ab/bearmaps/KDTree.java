@@ -127,7 +127,7 @@ public class KDTree implements PointSet {
         Point best = createBestBad(point, t, depth, greaterLimit, lesserLimit);
         return best;
     }
-    
+
     private Point createBestBad(Point point, PointTree t, int depth, double gLim, double lessLim) {
         Point best;
         if (depth % 2 == 0) {
