@@ -1,11 +1,12 @@
 package bearmaps;
+
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
     private int size = 0;
-    Node[] minHeap = new ArrayHeapMinPQ.Node[10];
-    private HashMap<T, Node> nodeMap;
+    private Node[] minHeap = new ArrayHeapMinPQ.Node[10];
+    private HashMap<T, Integer> nodeMap = new HashMap<>();
     private class Node {
         T item;
         double priority;
@@ -13,7 +14,6 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         Node(T item, double priority) {
             this.item = item;
             this.priority = priority;
-
         }
         @Override
         public int hashCode() {
@@ -36,7 +36,10 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
     private void swim(int index) {
         while (index != 0) {
             int parentIndex = (index - 1) / 2;
-            if (minHeap[index].priority < minHeap[parentIndex].priority) {
+            double d1 = minHeap[index].priority;
+            double d2 = minHeap[parentIndex].priority;
+            int comparator = Double.compare(d1, d2);
+            if (comparator < 0) {
                 Node pCopy = minHeap[parentIndex];
                 minHeap[parentIndex] = minHeap[index];
                 minHeap[index] = pCopy;
@@ -44,9 +47,10 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
                 index = parentIndex;
             } else {
                 minHeap[index].index = index;
-                break;
+                return;
             }
         }
+        minHeap[index].index = index;
     }
     @Override
     public boolean contains(T item) {
@@ -54,6 +58,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
     }
     @Override
     public T getSmallest() {
+        // This crashes if the size of the PQ is 0.
         return minHeap[0].item;
     }
     @Override
@@ -64,18 +69,23 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         T smallest = minHeap[0].item;
         nodeMap.remove(smallest);
         minHeap[0] = minHeap[size-1];
-        minHeap[size-1] = null;
-        sink(0);
+        minHeap[size - 1] = null;
         size--;
+        if (size > 0) {
+            sink(0);
+        }
         resize();
         return smallest;
     }
     private void sink(int index) {
         int childIndex = smallestChild(index);
-        while (childIndex > 0) {
-            if (minHeap[index].priority <= minHeap[childIndex].priority) {
+        while (childIndex != -1) {
+            double d1 = minHeap[index].priority;
+            double d2 = minHeap[childIndex].priority;
+            int comparator = Double.compare(d1, d2);
+            if (comparator < 0) {
                 minHeap[index].index = index;
-                break;
+                return;
             } else {
                 Node pCopy = minHeap[index];
                 minHeap[index] = minHeap[childIndex];
@@ -83,14 +93,16 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
                 minHeap[childIndex] = pCopy;
                 index = childIndex;
                 childIndex = smallestChild(index);
+                minHeap[index].index = index;
             }
         }
+        minHeap[index].index = index;
     }
     private int smallestChild(int index) {
         int left = index*2+1;
         int right = index*2+2;
-        boolean outOfBounds = right >= size;
-        if (outOfBounds || (minHeap[left] == null && minHeap[right] == null)) {
+        boolean outOfBounds = left >= size;
+        if (outOfBounds || (minHeap[left] == null)) {
             return -1;
         } else if (minHeap[right] == null || minHeap[left].priority < minHeap[right].priority) {
             return left;
@@ -114,13 +126,15 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
     }
     private void resize() {
         Double fill = Double.valueOf(size) / minHeap.length;
-        if (0.25 < fill && fill < 1.00) {
+        if ((fill > 0.25 || size < 50) && fill < 1.00) {
             return;
         }
-        Node[] newHeap = (Node []) new Object[size*2];
+        Node[] newHeap = new ArrayHeapMinPQ.Node[size*2];
         for (int i = 0; i < size; i++) {
             newHeap[i] = minHeap[i];
         }
         minHeap = newHeap;
+    }
+    public static void main(String[] args) {
     }
 }
