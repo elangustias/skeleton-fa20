@@ -1,14 +1,11 @@
 package bearmaps;
 
 import java.util.*;
-/* I figured out how to store integers in my hashmap so I don't have to store the entire
- * Node and maybe save some memory but it actually slowed down the tests even further.
- */
 
-public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
+public class AHMinPQDummy<T> implements ExtrinsicMinPQ<T> {
     private int size = 0;
     private double minFill = 0.25;
-    private Node[] minHeap = new ArrayHeapMinPQ.Node[10];
+    private Node[] minHeap = new AHMinPQDummy.Node[10];
     private HashMap<T, Integer> indexMap = new HashMap<>();
     private class Node {
         T item;
@@ -23,7 +20,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         if (indexMap.containsKey(item)) {
             throw new IllegalArgumentException("Item already exists");
         }
-        ArrayHeapMinPQ.Node n = new ArrayHeapMinPQ.Node(item, priority);
+        AHMinPQDummy.Node n = new AHMinPQDummy.Node(item, priority);
         minHeap[size] = n;
         swim(size);
         size++;
@@ -38,7 +35,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         while (index != 0) {
             int parentIndex = (index - 1) / 2;
             if (minHeap[index].priority < minHeap[parentIndex].priority) {
-                ArrayHeapMinPQ.Node pCopy = minHeap[parentIndex];
+                AHMinPQDummy.Node pCopy = minHeap[parentIndex];
                 minHeap[parentIndex] = minHeap[index];
                 minHeap[index] = pCopy;
                 indexMap.put(minHeap[index].item, index); // Updates the demoted Node's index before reassigning index value
@@ -88,7 +85,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
                 indexMap.put(minHeap[index].item, index);
                 return;
             } else {
-                ArrayHeapMinPQ.Node pCopy = minHeap[index];
+                AHMinPQDummy.Node pCopy = minHeap[index];
                 minHeap[index] = minHeap[childIndex];
                 indexMap.put(minHeap[index].item, index); // Updates the promoted Node's index before reassigning index value
                 minHeap[childIndex] = pCopy;
@@ -125,7 +122,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         swim(index);
     }
     private void resize() {
-        ArrayHeapMinPQ.Node[] newHeap = new ArrayHeapMinPQ.Node[size*2];
+        AHMinPQDummy.Node[] newHeap = new AHMinPQDummy.Node[size*2];
         for (int i = 0; i < size; i++) {
             newHeap[i] = minHeap[i];
         }

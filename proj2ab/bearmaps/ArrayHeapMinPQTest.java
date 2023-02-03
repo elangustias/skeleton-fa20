@@ -33,9 +33,10 @@ public class ArrayHeapMinPQTest {
     }
     @Test
     public void testMethods() {
-        int strSize = 500;
+        int strSize = 2000;
         NaiveMinPQ<String> naive = new NaiveMinPQ<>();
         ArrayHeapMinPQ<String> ah = new ArrayHeapMinPQ<>();
+        //AHMinPQDummy<String> ah = new AHMinPQDummy<>();
         Random rand = new Random();
 
         for (int i = 0; i < strSize; i++) {
@@ -62,7 +63,7 @@ public class ArrayHeapMinPQTest {
     public static void testAddTime() {
         int size = 31250;
         int ops = size;
-        int numTests = 8;
+        int numTests = 9;
         ArrayList<Integer> listOfSizes = new ArrayList<>();
         ArrayList<Integer> listOfOps = new ArrayList<>();
         ArrayList<Double> listOfTimes = new ArrayList<>();
@@ -71,6 +72,7 @@ public class ArrayHeapMinPQTest {
             Stopwatch sw = new Stopwatch();
             //NaiveMinPQ<String> pq = new NaiveMinPQ<>();
             ArrayHeapMinPQ<String> pq = new ArrayHeapMinPQ<>();
+            //AHMinPQDummy<String> pq = new AHMinPQDummy<>();
             for (int i = 0; i < size; i++) {
                 String str = getSaltString();
                 double rd = rand.nextDouble();
@@ -87,15 +89,16 @@ public class ArrayHeapMinPQTest {
     }
     public static void testContainsTime() {
         int size = 31250;
-        int ops = 1000;
-        int numTests = 8;
+        int ops = 100000;
+        int numTests = 9;
         ArrayList<Integer> listOfSizes = new ArrayList<>();
         ArrayList<Integer> listOfOps = new ArrayList<>();
         ArrayList<Double> listOfTimes = new ArrayList<>();
         Random rand = new Random();
         for (int in = 0; in < numTests; in++) {
-            //NaiveMinPQ<String> pq = new NaiveMinPQ<>();
+            // NaiveMinPQ<String> pq = new NaiveMinPQ<>();
             ArrayHeapMinPQ<String> pq = new ArrayHeapMinPQ<>();
+            //AHMinPQDummy<String> pq = new AHMinPQDummy<>();
             for (int i = 0; i < size; i++) {
                 String str = getSaltString();
                 double rd = rand.nextDouble();
@@ -114,7 +117,42 @@ public class ArrayHeapMinPQTest {
         }
         printTimingTable(listOfSizes, listOfTimes, listOfOps);
     }
+    public static void testChangePriorityTime() {
+        int size = 31250;
+        int ops = 10000;
+        int numTests = 8;
+        ArrayList<String> strings = new ArrayList<>();
+        ArrayList<Integer> listOfSizes = new ArrayList<>();
+        ArrayList<Integer> listOfOps = new ArrayList<>();
+        ArrayList<Double> listOfTimes = new ArrayList<>();
+        Random rand = new Random();
+        //NaiveMinPQ<String> pq = new NaiveMinPQ<>();
+        ArrayHeapMinPQ<String> pq = new ArrayHeapMinPQ<>();
+        //AHMinPQDummy<String> pq = new AHMinPQDummy<>();
+        for (int i = 0; i < numTests; i++) {
+            for (int ind = 0; ind < size; ind++) {
+                String str = getSaltString();
+                strings.add(str);
+                double priority = rand.nextDouble();
+                pq.add(str, priority);
+            }
+            Stopwatch sw = new Stopwatch();
+            for (int in = 0; in < ops; in++) {
+                int index = rand.nextInt(0, size);
+                double pr = rand.nextDouble();
+                pq.changePriority(strings.get(index), pr);
+            }
+            double timeInSeconds = sw.elapsedTime();
+            listOfSizes.add(size);
+            listOfOps.add(ops);
+            listOfTimes.add(timeInSeconds);
+            size *= 2;
+        }
+        printTimingTable(listOfSizes, listOfTimes, listOfOps);
+    }
     public static void main(String[] args) {
-        testContainsTime();
+       testAddTime();
+       testContainsTime();
+       testChangePriorityTime();
     }
 }
