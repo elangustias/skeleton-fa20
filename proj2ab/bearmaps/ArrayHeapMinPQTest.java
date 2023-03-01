@@ -1,6 +1,7 @@
 package bearmaps;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.Stopwatch;
+import org.junit.Test;
 import org.junit.*;
 import java.util.*;
 
@@ -36,7 +37,6 @@ public class ArrayHeapMinPQTest {
         int strSize = 2000;
         NaiveMinPQ<String> naive = new NaiveMinPQ<>();
         ArrayHeapMinPQ<String> ah = new ArrayHeapMinPQ<>();
-        //AHMinPQDummy<String> ah = new AHMinPQDummy<>();
         Random rand = new Random();
 
         for (int i = 0; i < strSize; i++) {
@@ -60,7 +60,8 @@ public class ArrayHeapMinPQTest {
             Assert.assertEquals(ah.getSmallest(), naive.getSmallest());
         }
     }
-    public static void testAddTime() {
+    @Test
+    public void testAddTime() {
         int size = 31250;
         int ops = size;
         int numTests = 9;
@@ -72,7 +73,6 @@ public class ArrayHeapMinPQTest {
             Stopwatch sw = new Stopwatch();
             //NaiveMinPQ<String> pq = new NaiveMinPQ<>();
             ArrayHeapMinPQ<String> pq = new ArrayHeapMinPQ<>();
-            //AHMinPQDummy<String> pq = new AHMinPQDummy<>();
             for (int i = 0; i < size; i++) {
                 String str = getSaltString();
                 double rd = rand.nextDouble();
@@ -87,7 +87,8 @@ public class ArrayHeapMinPQTest {
         }
         printTimingTable(listOfSizes, listOfTimes, listOfOps);
     }
-    public static void testContainsTime() {
+    @Test
+    public void testContainsTime() {
         int size = 31250;
         int ops = 100000;
         int numTests = 9;
@@ -96,9 +97,8 @@ public class ArrayHeapMinPQTest {
         ArrayList<Double> listOfTimes = new ArrayList<>();
         Random rand = new Random();
         for (int in = 0; in < numTests; in++) {
-            // NaiveMinPQ<String> pq = new NaiveMinPQ<>();
+            //NaiveMinPQ<String> pq = new NaiveMinPQ<>();
             ArrayHeapMinPQ<String> pq = new ArrayHeapMinPQ<>();
-            //AHMinPQDummy<String> pq = new AHMinPQDummy<>();
             for (int i = 0; i < size; i++) {
                 String str = getSaltString();
                 double rd = rand.nextDouble();
@@ -117,7 +117,8 @@ public class ArrayHeapMinPQTest {
         }
         printTimingTable(listOfSizes, listOfTimes, listOfOps);
     }
-    public static void testChangePriorityTime() {
+    @Test
+    public void testChangePriorityTime() {
         int size = 31250;
         int ops = 10000;
         int numTests = 8;
@@ -128,7 +129,6 @@ public class ArrayHeapMinPQTest {
         Random rand = new Random();
         //NaiveMinPQ<String> pq = new NaiveMinPQ<>();
         ArrayHeapMinPQ<String> pq = new ArrayHeapMinPQ<>();
-        //AHMinPQDummy<String> pq = new AHMinPQDummy<>();
         for (int i = 0; i < numTests; i++) {
             for (int ind = 0; ind < size; ind++) {
                 String str = getSaltString();
@@ -149,10 +149,5 @@ public class ArrayHeapMinPQTest {
             size *= 2;
         }
         printTimingTable(listOfSizes, listOfTimes, listOfOps);
-    }
-    public static void main(String[] args) {
-       testAddTime();
-       testContainsTime();
-       testChangePriorityTime();
     }
 }

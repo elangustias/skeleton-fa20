@@ -2,14 +2,13 @@ package bearmaps;
 
 import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
-
 import java.util.ArrayList;
 import static org.junit.Assert.assertEquals;
 
 public class KDTreeNearestTest {
     @Test
     public void testNearest() {
-        int size = 20000;
+        int size = 30000;
         ArrayList<Point> listOfPoints = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             Double randPoint = StdRandom.uniform(-1000.00, 1000.00);

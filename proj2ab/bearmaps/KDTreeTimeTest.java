@@ -1,10 +1,8 @@
 package bearmaps;
 
-import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.Stopwatch;
 import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class KDTreeTimeTest {
         }
     }
     @Test
-    public static void timeNearest() {
+    public void timeNearest() {
         int size = 31250;
         int ops = 1000000;
         int numTests = 6;
@@ -52,7 +50,7 @@ public class KDTreeTimeTest {
         printTimingTable(listOfSizes, listOfTimes, listOfOps);
     }
     @Test
-    public static void timeConstructor() {
+    public void timeConstructor() {
         int size = 31250;
         int numTests = 8;
         ArrayList<Integer> listOfSizes = new ArrayList<>();
@@ -76,7 +74,4 @@ public class KDTreeTimeTest {
         }
         printTimingTable(listOfSizes, listOfTimes, listOfOps);
     }
-    public static void main(String[] args) {
-    }
-
 }
