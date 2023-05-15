@@ -72,7 +72,7 @@ public class ArrayHeapMinPQ<T> implements ExtrinsicMinPQ<T> {
         if (size > 0) {
             sink(0);
         }
-        if (Double.valueOf(size) / minHeap.length < minFill) {
+        if (size > 10 && Double.valueOf(size) / minHeap.length < minFill) {
             resize();
         }
         return smallest;
