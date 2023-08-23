@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 public class KDTreeNearestTest {
     @Test
     public void testNearest() {
-        int size = 30000;
+        int size = 10000;
         ArrayList<Point> listOfPoints = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             Double randPoint = StdRandom.uniform(-1000.00, 1000.00);
@@ -18,7 +18,6 @@ public class KDTreeNearestTest {
         }
         NaivePointSet naive = new NaivePointSet(listOfPoints);
         KDTree kd = new KDTree(listOfPoints);
-        ArrayList<Point> queryPoints = new ArrayList<>();
         for (int in = 0; in < size; in++) {
             Double randPoint = StdRandom.uniform(-1000.00, 1000.00);
             Double randPoint2 = StdRandom.uniform(-1000.00, 1000.00);

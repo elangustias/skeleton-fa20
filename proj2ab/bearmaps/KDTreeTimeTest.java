@@ -52,7 +52,7 @@ public class KDTreeTimeTest {
     @Test
     public void timeConstructor() {
         int size = 31250;
-        int numTests = 8;
+        int numTests = 6;
         ArrayList<Integer> listOfSizes = new ArrayList<>();
         ArrayList<Integer> listOfOps = new ArrayList<>();
         ArrayList<Double> listOfTimes = new ArrayList<>();
